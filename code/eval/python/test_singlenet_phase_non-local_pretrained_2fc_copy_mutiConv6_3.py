@@ -18,14 +18,13 @@ from NLBlock_MutiConv6_3 import TimeConv
 parser = argparse.ArgumentParser(description='lstm testing')
 parser.add_argument('-g', '--gpu', default=True, type=bool, help='use gpu, default True')
 parser.add_argument('-s', '--seq', default=10, type=int, help='sequence length, default 10')
-parser.add_argument('-t', '--test', default=1600, type=int, help='test batch size, default 10')
-parser.add_argument('-w', '--work', default=10, type=int, help='num of workers to use, default 4')
-parser.add_argument('-n', '--name', type=str, help='name of model')
+parser.add_argument('-t', '--test', default=10, type=int, help='test batch size, default 10')
+parser.add_argument('-w', '--work', default=1, type=int, help='num of workers to use, default 4')
+parser.add_argument('-n', '--name', type=str, default='../../Training TMRNet/best_model/non-local/pretrained_lr5e-7_L30_2fc_copy_mutiConv6_3/lstm_epoch_5_length_10_opt_0_mulopt_1_flip_1_crop_1_batch_50_train_9912_val_8927.pth', help='name of model')
 parser.add_argument(
     '-c', '--crop', default=1, type=int, help='0 rand, 1 cent, 2 resize, 5 five_crop, 10 ten_crop, default 2')
 parser.add_argument('--LFB_l', default=30, type=int, help='long term feature bank length')
 parser.add_argument('--load_LFB', default=True, type=bool, help='whether load exist long term feature bank')
-
 
 args = parser.parse_args()
 '''
@@ -53,6 +52,7 @@ print('num of workers  : {:6d}'.format(workers))
 print('test crop type  : {:6d}'.format(crop_type))
 print('name of this model: {:s}'.format(model_name))  # so we can store all result in the same file
 print('Result store path: {:s}'.format(model_pure_name))
+
 
 def pil_loader(path):
     with open(path, 'rb') as f:
@@ -174,25 +174,27 @@ def get_useful_start_idx_LFB(sequence_length, list_each_length):
         count += list_each_length[i]
     return idx
 
+
 def get_long_feature(start_index_list, dict_start_idx_LFB, lfb):
     long_feature = []
     for j in range(len(start_index_list)):
         long_feature_each = []
-        
+
         # 上一个存在feature的index
         last_LFB_index_no_empty = dict_start_idx_LFB[int(start_index_list[j])]
-        
+
         for k in range(LFB_length):
             LFB_index = (start_index_list[j] - k - 1)
-            if int(LFB_index) in dict_start_idx_LFB:                
+            if int(LFB_index) in dict_start_idx_LFB:
                 LFB_index = dict_start_idx_LFB[int(LFB_index)]
                 long_feature_each.append(lfb[LFB_index])
                 last_LFB_index_no_empty = LFB_index
             else:
                 long_feature_each.append(lfb[last_LFB_index_no_empty])
-                
+
         long_feature.append(long_feature_each)
     return long_feature
+
 
 def get_test_data(data_path):
     with open(data_path, 'rb') as f:
@@ -212,14 +214,14 @@ def get_test_data(data_path):
         test_transforms = transforms.Compose([
             transforms.RandomCrop(224),
             transforms.ToTensor(),
-            transforms.Normalize([0.41757566,0.26098573,0.25888634],[0.21938758,0.1983,0.19342837])
+            transforms.Normalize([0.41757566, 0.26098573, 0.25888634], [0.21938758, 0.1983, 0.19342837])
         ])
     elif crop_type == 1:
         test_transforms = transforms.Compose([
             transforms.Resize((250, 250)),
             transforms.CenterCrop(224),
             transforms.ToTensor(),
-            transforms.Normalize([0.41757566,0.26098573,0.25888634],[0.21938758,0.1983,0.19342837])
+            transforms.Normalize([0.41757566, 0.26098573, 0.25888634], [0.21938758, 0.1983, 0.19342837])
         ])
     elif crop_type == 5:
         test_transforms = transforms.Compose([
@@ -227,7 +229,8 @@ def get_test_data(data_path):
             Lambda(lambda crops: torch.stack([transforms.ToTensor()(crop) for crop in crops])),
             Lambda(
                 lambda crops: torch.stack(
-                    [transforms.Normalize([0.41757566,0.26098573,0.25888634],[0.21938758,0.1983,0.19342837])(crop) for crop in crops]))
+                    [transforms.Normalize([0.41757566, 0.26098573, 0.25888634], [0.21938758, 0.1983, 0.19342837])(crop)
+                     for crop in crops]))
         ])
     elif crop_type == 10:
         test_transforms = transforms.Compose([
@@ -235,20 +238,21 @@ def get_test_data(data_path):
             Lambda(lambda crops: torch.stack([transforms.ToTensor()(crop) for crop in crops])),
             Lambda(
                 lambda crops: torch.stack(
-                    [transforms.Normalize([0.41757566,0.26098573,0.25888634],[0.21938758,0.1983,0.19342837])(crop) for crop in crops]))
+                    [transforms.Normalize([0.41757566, 0.26098573, 0.25888634], [0.21938758, 0.1983, 0.19342837])(crop)
+                     for crop in crops]))
         ])
     elif crop_type == 2:
         test_transforms = transforms.Compose([
             transforms.Resize((250, 250)),
             transforms.CenterCrop(224),
             transforms.ToTensor(),
-            transforms.Normalize([0.41757566,0.26098573,0.25888634],[0.21938758,0.1983,0.19342837])
+            transforms.Normalize([0.41757566, 0.26098573, 0.25888634], [0.21938758, 0.1983, 0.19342837])
         ])
     elif crop_type == 3:
         test_transforms = transforms.Compose([
             transforms.Resize((224, 224)),
             transforms.ToTensor(),
-            transforms.Normalize([0.41757566,0.26098573,0.25888634],[0.21938758,0.1983,0.19342837])
+            transforms.Normalize([0.41757566, 0.26098573, 0.25888634], [0.21938758, 0.1983, 0.19342837])
         ])
 
     test_dataset = CholecDataset(test_paths, test_labels, test_transforms)
@@ -270,8 +274,10 @@ class SeqSampler(Sampler):
     def __len__(self):
         return len(self.idx)
 
+
 # Long Term Feature bank
 g_LFB_test = np.zeros(shape=(0, 512))
+
 
 def test_model(test_dataset, test_num_each):
     num_test = len(test_dataset)
@@ -304,7 +310,7 @@ def test_model(test_dataset, test_num_each):
     print('num of test dataset: {:6d}'.format(num_test))
     print('num of test we use : {:6d}'.format(num_test_we_use))
     print('num of all test use: {:6d}'.format(num_test_all))
-# TODO sampler
+    # TODO sampler
 
     test_loader = DataLoader(test_dataset,
                              batch_size=test_batch_size,
@@ -326,7 +332,8 @@ def test_model(test_dataset, test_num_each):
 
         model_LFB = resnet_lstm_LFB()
 
-        model_LFB.load_state_dict(torch.load("./LFB/FBmodel/latest_model_15_val8702.pth"), strict=False)
+        # model_LFB.load_state_dict(torch.load("./LFB/FBmodel/latest_model_15_val8702.pth"), strict=False)
+        model_LFB.load_state_dict(torch.load("../../LFB/FBmodel/lstm_epoch_16_length_10_opt_0_mulopt_1_flip_1_crop_1_batch_50_train_9984_val_8519.pth"), strict=False)
 
         if use_gpu:
             model_LFB = DataParallel(model_LFB)
@@ -358,11 +365,11 @@ def test_model(test_dataset, test_num_each):
         print("finish!")
         g_LFB_test = np.array(g_LFB_test)
 
-        with open("./LFB/g_LFB_test.pkl", 'wb') as f:
+        with open("../../LFB/g_LFB_test.pkl", 'wb') as f:
             pickle.dump(g_LFB_test, f)
 
     else:
-        with open("./LFB/g_LFB_test.pkl", 'rb') as f:
+        with open("../../LFB/g_LFB_test.pkl", 'rb') as f:
             g_LFB_test = pickle.load(f)
 
         print("load completed")
@@ -374,7 +381,7 @@ def test_model(test_dataset, test_num_each):
     model = resnet_lstm()
     print(model)
     if torch.cuda.device_count() > 1:
-        print("Let's use", torch.cuda.device_count(), "GPUs!")  
+        print("Let's use", torch.cuda.device_count(), "GPUs!")
     model.load_state_dict(torch.load(model_name))
     model = DataParallel(model)
 
@@ -392,13 +399,12 @@ def test_model(test_dataset, test_num_each):
     all_preds = []
     all_preds_score = []
 
-
     with torch.no_grad():
 
         for data in test_loader:
-            
+
             # 释放显存
-            torch.cuda.empty_cache()            
+            torch.cuda.empty_cache()
 
             if use_gpu:
                 inputs, labels = data[0].to(device), data[1].to(device)
@@ -422,23 +428,23 @@ def test_model(test_dataset, test_num_each):
             Sm = nn.Softmax()
             outputs = Sm(outputs)
             possibility, preds = torch.max(outputs.data, 1)
-            print("possibility:",possibility)
+            print("possibility:", possibility)
 
             for i in range(len(preds)):
                 all_preds.append(preds[i].data.cpu())
             for i in range(len(possibility)):
                 all_preds_score.append(possibility[i].data.cpu())
-            print("all_preds length:",len(all_preds))
-            print("all_preds_score length:",len(all_preds_score)) 
+            print("all_preds length:", len(all_preds))
+            print("all_preds_score length:", len(all_preds_score))
             loss = criterion(outputs, labels)
             # TODO 和batchsize相关
             # test_loss += loss.data[0]/test_loss += loss.data.item()
-            print("preds:",preds.data.cpu())
-            print("labels:",labels.data.cpu())
+            print("preds:", preds.data.cpu())
+            print("labels:", labels.data.cpu())
 
             test_loss += loss.data.item()
             test_corrects += torch.sum(preds == labels.data)
-            print("test_corrects:",test_corrects)
+            print("test_corrects:", test_corrects)
 
     test_elapsed_time = time.time() - test_start_time
     test_accuracy = float(test_corrects) / float(num_test_we_use)
@@ -448,7 +454,7 @@ def test_model(test_dataset, test_num_each):
     print('leng of all preds:', len(all_preds))
     save_test = int("{:4.0f}".format(test_accuracy * 10000))
     pred_name = model_pure_name + '_test_' + str(save_test) + '_crop_' + str(crop_type) + '.pkl'
-    pred_score_name = model_pure_name + '_test_' + str(save_test) + '_crop_' + str(crop_type) +'_score'+'.pkl'
+    pred_score_name = model_pure_name + '_test_' + str(save_test) + '_crop_' + str(crop_type) + '_score' + '.pkl'
 
     with open(pred_name, 'wb') as f:
         pickle.dump(all_preds, f)

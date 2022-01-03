@@ -1,0 +1,14 @@
+
+.idea/*
+code/.idea/*
+*/.idea/*
+data/*
+figure/*
+*/__pycache__/*
+code/eval/python/__pycache__/NLBlock_MutiConv6_3.cpython-39.pyc
+code/eval/python/__pycache__/NLBlock.cpython-39.pyc
+code/LFB/FBmodel/*.pth
+*.pth
+*.pkl
+*.pyc
+code/Training TMRNet/__pycache__/NLBlock_MutiConv6_3.cpython-39.pyc
