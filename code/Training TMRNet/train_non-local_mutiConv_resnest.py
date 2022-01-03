@@ -102,6 +102,7 @@ def pil_loader(path):
         with Image.open(f) as img:
             return img.convert('RGB')
 
+
 class RandomCrop(object):
 
     def __init__(self, size, padding=0):
@@ -144,8 +145,9 @@ class RandomHorizontalFlip(object):
             return img.transpose(Image.FLIP_LEFT_RIGHT)
         return img
 
+
 class RandomRotation(object):
-    def __init__(self,degrees):
+    def __init__(self, degrees):
         self.degrees = degrees
         self.count = 0
 
@@ -153,11 +155,12 @@ class RandomRotation(object):
         seed = self.count // sequence_length
         random.seed(seed)
         self.count += 1
-        angle = random.randint(-self.degrees,self.degrees)
+        angle = random.randint(-self.degrees, self.degrees)
         return TF.rotate(img, angle)
 
+
 class ColorJitter(object):
-    def __init__(self,brightness=0.1, contrast=0.1, saturation=0.1, hue=0.1):
+    def __init__(self, brightness=0.1, contrast=0.1, saturation=0.1, hue=0.1):
         self.brightness = brightness
         self.contrast = contrast
         self.saturation = saturation
@@ -173,11 +176,11 @@ class ColorJitter(object):
         saturation_factor = random.uniform(1 - self.saturation, 1 + self.saturation)
         hue_factor = random.uniform(- self.hue, self.hue)
 
-        img_ = TF.adjust_brightness(img,brightness_factor)
-        img_ = TF.adjust_contrast(img_,contrast_factor)
-        img_ = TF.adjust_saturation(img_,saturation_factor)
-        img_ = TF.adjust_hue(img_,hue_factor)
-        
+        img_ = TF.adjust_brightness(img, brightness_factor)
+        img_ = TF.adjust_contrast(img_, contrast_factor)
+        img_ = TF.adjust_saturation(img_, saturation_factor)
+        img_ = TF.adjust_hue(img_, hue_factor)
+
         return img_
 
 
@@ -185,7 +188,7 @@ class CholecDataset(Dataset):
     def __init__(self, file_paths, file_labels, transform=None,
                  loader=pil_loader):
         self.file_paths = file_paths
-        self.file_labels_phase = file_labels[:,0]
+        self.file_labels_phase = file_labels[:, 0]
         self.transform = transform
         self.loader = loader
 
@@ -201,7 +204,9 @@ class CholecDataset(Dataset):
     def __len__(self):
         return len(self.file_paths)
 
+
 from resnest.torch import resnest50
+
 
 class resnet_lstm(torch.nn.Module):
     def __init__(self):
@@ -302,19 +307,19 @@ def get_long_feature(start_index_list, dict_start_idx_LFB, lfb):
     long_feature = []
     for j in range(len(start_index_list)):
         long_feature_each = []
-        
+
         # 上一个存在feature的index
         last_LFB_index_no_empty = dict_start_idx_LFB[int(start_index_list[j])]
-        
+
         for k in range(LFB_length):
             LFB_index = (start_index_list[j] - k - 1)
-            if int(LFB_index) in dict_start_idx_LFB:                
+            if int(LFB_index) in dict_start_idx_LFB:
                 LFB_index = dict_start_idx_LFB[int(LFB_index)]
                 long_feature_each.append(lfb[LFB_index])
                 last_LFB_index_no_empty = LFB_index
             else:
                 long_feature_each.append(lfb[last_LFB_index_no_empty])
-            
+
         long_feature.append(long_feature_each)
     return long_feature
 
@@ -345,7 +350,7 @@ def get_data(data_path):
             RandomCrop(224),
             RandomHorizontalFlip(),
             transforms.ToTensor(),
-            transforms.Normalize([0.41757566,0.26098573,0.25888634],[0.21938758,0.1983,0.19342837])
+            transforms.Normalize([0.41757566, 0.26098573, 0.25888634], [0.21938758, 0.1983, 0.19342837])
         ])
     elif use_flip == 1:
         train_transforms = transforms.Compose([
@@ -355,7 +360,7 @@ def get_data(data_path):
             RandomHorizontalFlip(),
             RandomRotation(5),
             transforms.ToTensor(),
-            transforms.Normalize([0.41757566,0.26098573,0.25888634], [0.21938758,0.1983,0.19342837])
+            transforms.Normalize([0.41757566, 0.26098573, 0.25888634], [0.21938758, 0.1983, 0.19342837])
         ])
 
     if crop_type == 0:
@@ -363,20 +368,20 @@ def get_data(data_path):
             transforms.Resize((250, 250)),
             transforms.RandomCrop(224),
             transforms.ToTensor(),
-            transforms.Normalize([0.41757566,0.26098573,0.25888634],[0.21938758,0.1983,0.19342837])
+            transforms.Normalize([0.41757566, 0.26098573, 0.25888634], [0.21938758, 0.1983, 0.19342837])
         ])
     elif crop_type == 1:
         test_transforms = transforms.Compose([
             transforms.Resize((250, 250)),
             transforms.CenterCrop(224),
             transforms.ToTensor(),
-            transforms.Normalize([0.41757566,0.26098573,0.25888634],[0.21938758,0.1983,0.19342837])
+            transforms.Normalize([0.41757566, 0.26098573, 0.25888634], [0.21938758, 0.1983, 0.19342837])
         ])
     elif crop_type == 2:
         test_transforms = transforms.Compose([
             transforms.Resize((224, 224)),
             transforms.ToTensor(),
-            transforms.Normalize([0.41757566,0.26098573,0.25888634],[0.21938758,0.1983,0.19342837])
+            transforms.Normalize([0.41757566, 0.26098573, 0.25888634], [0.21938758, 0.1983, 0.19342837])
         ])
     elif crop_type == 5:
         test_transforms = transforms.Compose([
@@ -385,7 +390,8 @@ def get_data(data_path):
             Lambda(lambda crops: torch.stack([transforms.ToTensor()(crop) for crop in crops])),
             Lambda(
                 lambda crops: torch.stack(
-                    [transforms.Normalize([0.41757566,0.26098573,0.25888634],[0.21938758,0.1983,0.19342837])(crop) for crop in crops]))
+                    [transforms.Normalize([0.41757566, 0.26098573, 0.25888634], [0.21938758, 0.1983, 0.19342837])(crop)
+                     for crop in crops]))
         ])
     elif crop_type == 10:
         test_transforms = transforms.Compose([
@@ -394,14 +400,15 @@ def get_data(data_path):
             Lambda(lambda crops: torch.stack([transforms.ToTensor()(crop) for crop in crops])),
             Lambda(
                 lambda crops: torch.stack(
-                    [transforms.Normalize([0.41757566,0.26098573,0.25888634],[0.21938758,0.1983,0.19342837])(crop) for crop in crops]))
+                    [transforms.Normalize([0.41757566, 0.26098573, 0.25888634], [0.21938758, 0.1983, 0.19342837])(crop)
+                     for crop in crops]))
         ])
 
     train_dataset_80 = CholecDataset(train_paths_80, train_labels_80, train_transforms)
     train_dataset_80_LFB = CholecDataset(train_paths_80, train_labels_80, test_transforms)
     val_dataset_80 = CholecDataset(val_paths_80, val_labels_80, test_transforms)
 
-    return (train_dataset_80,train_dataset_80_LFB), train_num_each_80, \
+    return (train_dataset_80, train_dataset_80_LFB), train_num_each_80, \
            val_dataset_80, val_num_each_80
 
 
@@ -424,6 +431,7 @@ sig_f = nn.Sigmoid()
 # Long Term Feature bank
 g_LFB_train = np.zeros(shape=(0, 512))
 g_LFB_val = np.zeros(shape=(0, 512))
+
 
 def valMinibatch(testloader, model, dict_start_idx_LFB):
     model.eval()
@@ -466,11 +474,11 @@ def train_model(train_dataset, train_num_each, val_dataset, val_num_each):
     # TensorBoard
     writer = SummaryWriter('runs/non-local/pretrained_lr5e-7_L30_2fc_copy_mutiConv6_resnest_bs40/')
 
-    (train_num_each_80),\
-    (val_dataset),\
+    (train_num_each_80), \
+    (val_dataset), \
     (val_num_each) = train_num_each, val_dataset, val_num_each
 
-    (train_dataset_80,train_dataset_80_LFB) = train_dataset
+    (train_dataset_80, train_dataset_80_LFB) = train_dataset
 
     train_useful_start_idx_80 = get_useful_start_idx(sequence_length, train_num_each_80)
     val_useful_start_idx = get_useful_start_idx(sequence_length, val_num_each)
@@ -540,7 +548,7 @@ def train_model(train_dataset, train_num_each, val_dataset, val_num_each):
     print("loading features!>.........")
 
     if not load_exist_LFB:
-        
+
         train_feature_loader = DataLoader(
             train_dataset_80_LFB,
             batch_size=val_batch_size,
@@ -556,9 +564,7 @@ def train_model(train_dataset, train_num_each, val_dataset, val_num_each):
             pin_memory=False
         )
 
-
         model_LFB = resnet_lstm_LFB()
-
         model_LFB.load_state_dict(torch.load(args.model_path), strict=False)
 
         if use_gpu:
@@ -584,9 +590,9 @@ def train_model(train_dataset, train_num_each, val_dataset, val_num_each):
                 for j in range(len(outputs_feature)):
                     save_feature = outputs_feature.data.cpu()[j].numpy()
                     save_feature = save_feature.reshape(1, 512)
-                    g_LFB_train = np.concatenate((g_LFB_train, save_feature),axis=0)
+                    g_LFB_train = np.concatenate((g_LFB_train, save_feature), axis=0)
 
-                print("train feature length:",len(g_LFB_train))
+                print("train feature length:", len(g_LFB_train))
 
             for data in val_feature_loader:
                 if use_gpu:
@@ -602,7 +608,7 @@ def train_model(train_dataset, train_num_each, val_dataset, val_num_each):
                     save_feature = save_feature.reshape(1, 512)
                     g_LFB_val = np.concatenate((g_LFB_val, save_feature), axis=0)
 
-                print("val feature length:",len(g_LFB_val))
+                print("val feature length:", len(g_LFB_val))
 
         print("finish!")
         g_LFB_train = np.array(g_LFB_train)
@@ -613,7 +619,7 @@ def train_model(train_dataset, train_num_each, val_dataset, val_num_each):
 
         with open("./LFB/g_LFB_val_st.pkl", 'wb') as f:
             pickle.dump(g_LFB_val, f)
-    
+
     else:
         with open("./LFB/g_LFB_train_st.pkl", 'rb') as f:
             g_LFB_train = pickle.load(f)
@@ -623,15 +629,14 @@ def train_model(train_dataset, train_num_each, val_dataset, val_num_each):
 
         print("load completed")
 
-    print("g_LFB_train shape:",g_LFB_train.shape)
-    print("g_LFB_val shape:",g_LFB_val.shape)
-    
+    print("g_LFB_train shape:", g_LFB_train.shape)
+    print("g_LFB_val shape:", g_LFB_val.shape)
+
     torch.cuda.empty_cache()
 
     model = resnet_lstm()
-
     model.load_state_dict(torch.load(args.model_path), strict=False)
-       
+
     if use_gpu:
         model = DataParallel(model)
         model.to(device)
@@ -741,16 +746,15 @@ def train_model(train_dataset, train_num_each, val_dataset, val_num_each):
             train_corrects_phase += batch_corrects_phase
             minibatch_correct_phase += batch_corrects_phase
 
-
             if i % 500 == 499:
                 # ...log the running loss
-                batch_iters = epoch * num_train_all/sequence_length + i*train_batch_size/sequence_length
+                batch_iters = epoch * num_train_all / sequence_length + i * train_batch_size / sequence_length
                 writer.add_scalar('training loss phase',
-                                  running_loss_phase / (train_batch_size*500/sequence_length) ,
+                                  running_loss_phase / (train_batch_size * 500 / sequence_length),
                                   batch_iters)
                 # ...log the training acc
                 writer.add_scalar('training acc phase',
-                                  float(minibatch_correct_phase) / (float(train_batch_size)*500/sequence_length),
+                                  float(minibatch_correct_phase) / (float(train_batch_size) * 500 / sequence_length),
                                   batch_iters)
                 # ...log the val acc loss
 
@@ -772,22 +776,24 @@ def train_model(train_dataset, train_num_each, val_dataset, val_num_each):
                     public_name = "minibatch_cnn_lstm_phase" \
                                   + "_valPhase_" + str(save_val_phase)
 
-                    torch.save(model.module.state_dict(),"./best_model/non-local/pretrained_lr5e-7_L30_2fc_copy_mutiConv6_resnest_bs40/" + public_name + ".pth")
+                    torch.save(model.module.state_dict(),
+                               "./best_model/non-local/pretrained_lr5e-7_L30_2fc_copy_mutiConv6_resnest_bs40/" + public_name + ".pth")
 
                 running_loss_phase = 0.0
                 minibatch_correct_phase = 0.0
 
-            if (i+1)*train_batch_size >= num_train_all:               
+            if (i + 1) * train_batch_size >= num_train_all:
                 running_loss_phase = 0.0
                 minibatch_correct_phase = 0.0
 
             batch_progress += 1
-            if batch_progress*train_batch_size >= num_train_all:
+            if batch_progress * train_batch_size >= num_train_all:
                 percent = 100.0
                 print('Batch progress: %s [%d/%d]' % (str(percent) + '%', num_train_all, num_train_all), end='\n')
             else:
-                percent = round(batch_progress*train_batch_size / num_train_all * 100, 2)
-                print('Batch progress: %s [%d/%d]' % (str(percent) + '%', batch_progress*train_batch_size, num_train_all), end='\r')
+                percent = round(batch_progress * train_batch_size / num_train_all * 100, 2)
+                print('Batch progress: %s [%d/%d]' % (
+                str(percent) + '%', batch_progress * train_batch_size, num_train_all), end='\r')
 
         train_elapsed_time = time.time() - train_start_time
         train_accuracy_phase = float(train_corrects_phase) / float(num_train_all) * sequence_length
@@ -836,21 +842,21 @@ def train_model(train_dataset, train_num_each, val_dataset, val_num_each):
                 for i in range(len(labels_phase)):
                     val_all_labels_phase.append(int(labels_phase.data.cpu()[i]))
 
-
                 val_progress += 1
-                if val_progress*val_batch_size >= num_val_all:
+                if val_progress * val_batch_size >= num_val_all:
                     percent = 100.0
                     print('Val progress: %s [%d/%d]' % (str(percent) + '%', num_val_all, num_val_all), end='\n')
                 else:
-                    percent = round(val_progress*val_batch_size / num_val_all * 100, 2)
-                    print('Val progress: %s [%d/%d]' % (str(percent) + '%', val_progress*val_batch_size, num_val_all), end='\r')
+                    percent = round(val_progress * val_batch_size / num_val_all * 100, 2)
+                    print('Val progress: %s [%d/%d]' % (str(percent) + '%', val_progress * val_batch_size, num_val_all),
+                          end='\r')
 
         val_elapsed_time = time.time() - val_start_time
         val_accuracy_phase = float(val_corrects_phase) / float(num_val_we_use)
         val_average_loss_phase = val_loss_phase / num_val_we_use
 
-        val_precision_each_phase = metrics.precision_score(val_all_labels_phase,val_all_preds_phase, average=None)
-        val_recall_each_phase = metrics.recall_score(val_all_labels_phase,val_all_preds_phase, average=None)
+        val_precision_each_phase = metrics.precision_score(val_all_labels_phase, val_all_preds_phase, average=None)
+        val_recall_each_phase = metrics.recall_score(val_all_labels_phase, val_all_preds_phase, average=None)
 
         writer.add_scalar('validation acc epoch phase',
                           float(val_accuracy_phase), epoch)
@@ -897,24 +903,26 @@ def train_model(train_dataset, train_num_each, val_dataset, val_num_each):
         save_val_phase = int("{:4.0f}".format(best_val_accuracy_phase * 10000))
         save_train_phase = int("{:4.0f}".format(correspond_train_acc_phase * 10000))
         base_name = "lstm" \
-                     + "_epoch_" + str(best_epoch) \
-                     + "_length_" + str(sequence_length) \
-                     + "_opt_" + str(optimizer_choice) \
-                     + "_mulopt_" + str(multi_optim) \
-                     + "_flip_" + str(use_flip) \
-                     + "_crop_" + str(crop_type) \
-                     + "_batch_" + str(train_batch_size) \
-                     + "_train_" + str(save_train_phase) \
-                     + "_val_" + str(save_val_phase)
+                    + "_epoch_" + str(best_epoch) \
+                    + "_length_" + str(sequence_length) \
+                    + "_opt_" + str(optimizer_choice) \
+                    + "_mulopt_" + str(multi_optim) \
+                    + "_flip_" + str(use_flip) \
+                    + "_crop_" + str(crop_type) \
+                    + "_batch_" + str(train_batch_size) \
+                    + "_train_" + str(save_train_phase) \
+                    + "_val_" + str(save_val_phase)
 
-        torch.save(best_model_wts, "./best_model/non-local/pretrained_lr5e-7_L30_2fc_copy_mutiConv6_resnest_bs40/"+base_name+".pth")
-        print("best_epoch",str(best_epoch))
+        torch.save(best_model_wts,
+                   "./best_model/non-local/pretrained_lr5e-7_L30_2fc_copy_mutiConv6_resnest_bs40/" + base_name + ".pth")
+        print("best_epoch", str(best_epoch))
 
-        torch.save(model.module.state_dict(), "./temp/non-local/pretrained_lr5e-7_L30_2fc_copy_mutiConv6_resnest_bs40/latest_model_"+str(epoch)+".pth")
+        torch.save(model.module.state_dict(),
+                   "./temp/non-local/pretrained_lr5e-7_L30_2fc_copy_mutiConv6_resnest_bs40/latest_model_" + str(
+                       epoch) + ".pth")
 
 
 def main():
-
     train_dataset_80, train_num_each_80, \
     val_dataset, val_num_each = get_data('./train_val_paths_labels.pkl')
     train_model((train_dataset_80),

@@ -2,9 +2,6 @@ import torch
 import torch.nn as nn
 import torch.nn.init as init
 import torch.nn.functional as F
-from torchsummary import summary
-from torch.nn import DataParallel
-import numpy as np
 
 
 class NLBlock(nn.Module):
@@ -28,7 +25,7 @@ class NLBlock(nn.Module):
         Lt_1 = self.linear2(Lt)
         Lt_1 = Lt_1.transpose(1, 2)
         SL = torch.matmul(St_1, Lt_1)
-        SL = SL * ((1/512)**0.5)
+        SL = SL * ((1 / 512) ** 0.5)
         SL = F.softmax(SL, dim=2)
         Lt_2 = self.linear3(Lt)
         SLL = torch.matmul(SL, Lt_2)
@@ -37,8 +34,8 @@ class NLBlock(nn.Module):
         SLL = self.linear4(SLL)
         SLL = self.dropout(SLL)
         SLL = SLL.view(-1, 512)
-        return (St+SLL)
-    
+        return (St + SLL)
+
 
 '''
 class NLBlock_t(nn.Module):
@@ -90,4 +87,3 @@ input_t = torch.Tensor(input_t)
 y = model.forward(input_t)
 print(y.shape)
 '''
-

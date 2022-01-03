@@ -17,15 +17,16 @@ from NLBlock import NLBlock
 parser = argparse.ArgumentParser(description='lstm testing')
 parser.add_argument('-g', '--gpu', default=True, type=bool, help='use gpu, default True')
 parser.add_argument('-s', '--seq', default=10, type=int, help='sequence length, default 10')
-parser.add_argument('-t', '--test', default=1600, type=int, help='test batch size, default 10')
-parser.add_argument('-w', '--work', default=16, type=int, help='num of workers to use, default 4')
-parser.add_argument('-n', '--name', type=str, help='name of model')
+parser.add_argument('-t', '--test', default=10, type=int, help='test batch size, default 10')
+parser.add_argument('-w', '--work', default=1, type=int, help='num of workers to use, default 4')
+parser.add_argument('-n', '--name', default='../../Training TMRNet/best_model/non-local/pretrained_lr5e-7_L40_2fc_copy/lstm_epoch_4_length_10_opt_0_mulopt_1_flip_1_crop_1_batch_50_train_9876_val_9014.pth', type=str, help='name of model')
 parser.add_argument(
     '-c', '--crop', default=1, type=int, help='0 rand, 1 cent, 2 resize, 5 five_crop, 10 ten_crop, default 2')
 parser.add_argument('--LFB_l', default=30, type=int, help='long term feature bank length')
 parser.add_argument('--load_LFB', default=True, type=bool, help='whether load exist long term feature bank')
 
-
+# --name '..\..\Training TMRNet\best_model\non-local\pretrained_lr5e-7_L40_2fc_co py\lstm_epoch_4_length_10_opt_0_mulopt_1_flip_1_crop_1_batch_50_train_9876_val_9014.pth' --load_LFB False
+# '../../Training TMRNet/best_model/non-local/pretrained_lr5e-7_L40_2fc_copy/lstm_epoch_4_length_10_opt_0_mulopt_1_flip_1_crop_1_batch_50_train_9876_val_9014.pth'
 args = parser.parse_args()
 '''
 gpu_usg = ",".join(list(map(str, args.gpu)))
@@ -322,7 +323,7 @@ def test_model(test_dataset, test_num_each):
 
         model_LFB = resnet_lstm_LFB()
 
-        model_LFB.load_state_dict(torch.load("./LFB/FBmodel/latest_model_15_val8702.pth"), strict=False)
+        model_LFB.load_state_dict(torch.load("../../LFB/FBmodel/lstm_epoch_16_length_10_opt_0_mulopt_1_flip_1_crop_1_batch_50_train_9984_val_8519.pth"), strict=False)
 
         if use_gpu:
             model_LFB = DataParallel(model_LFB)
@@ -354,11 +355,11 @@ def test_model(test_dataset, test_num_each):
         print("finish!")
         g_LFB_test = np.array(g_LFB_test)
 
-        with open("./LFB/g_LFB_test.pkl", 'wb') as f:
+        with open("../../LFB/g_LFB_test.pkl", 'wb') as f:
             pickle.dump(g_LFB_test, f)
 
     else:
-        with open("./LFB/g_LFB_test.pkl", 'rb') as f:
+        with open("../../LFB/g_LFB_test.pkl", 'rb') as f:
             g_LFB_test = pickle.load(f)
 
         print("load completed")
@@ -418,7 +419,7 @@ def test_model(test_dataset, test_num_each):
             Sm = nn.Softmax()
             outputs = Sm(outputs)
             possibility, preds = torch.max(outputs.data, 1)
-            print("possibility:",possibility)
+            print("possibility:", possibility)
 
             for i in range(len(preds)):
                 all_preds.append(preds[i].data.cpu())
@@ -429,12 +430,12 @@ def test_model(test_dataset, test_num_each):
             loss = criterion(outputs, labels)
             # TODO 和batchsize相关
             # test_loss += loss.data[0]/test_loss += loss.data.item()
-            print("preds:",preds.data.cpu())
-            print("labels:",labels.data.cpu())
+            print("preds:", preds.data.cpu())
+            print("labels:", labels.data.cpu())
 
             test_loss += loss.data.item()
             test_corrects += torch.sum(preds == labels.data)
-            print("test_corrects:",test_corrects)
+            print("test_corrects:", test_corrects)
 
     test_elapsed_time = time.time() - test_start_time
     test_accuracy = float(test_corrects) / float(num_test_we_use)

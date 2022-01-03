@@ -27,7 +27,7 @@ from resnest.torch import resnest50
 parser = argparse.ArgumentParser(description='lstm training')
 parser.add_argument('-g', '--gpu', default=True, type=bool, help='gpu use, default True')
 parser.add_argument('-s', '--seq', default=10, type=int, help='sequence length, default 10')
-parser.add_argument('-t', '--train', default=50, type=int, help='train batch size, default 400')
+parser.add_argument('-t', '--train', default=40, type=int, help='train batch size, default 400')
 parser.add_argument('-v', '--val', default=10, type=int, help='valid batch size, default 10')
 parser.add_argument('-o', '--opt', default=0, type=int, help='0 for sgd 1 for adam, default 1')
 parser.add_argument('-m', '--multi', default=1, type=int, help='0 for single opt, 1 for multi opt, default 1')
@@ -200,7 +200,7 @@ class CholecDataset(Dataset):
 class resnet_lstm(torch.nn.Module):
     def __init__(self):
         super(resnet_lstm, self).__init__()
-        resnet = models.resnet50(pretrained=True)
+        resnet = resnest50(pretrained=True)
         self.share = torch.nn.Sequential()
         self.share.add_module("conv1", resnet.conv1)
         self.share.add_module("bn1", resnet.bn1)
@@ -377,7 +377,7 @@ def valMinibatch(testloader, model):
 
 def train_model(train_dataset, train_num_each, val_dataset, val_num_each):
     # TensorBoard
-    writer = SummaryWriter('runs/lr5e-4_do_resnet/')
+    writer = SummaryWriter('runs/lr5e-4_do_resnest/')
 
     (train_dataset_80), \
     (train_num_each_80), \
@@ -668,14 +668,14 @@ def train_model(train_dataset, train_num_each, val_dataset, val_num_each):
                     + "_train_" + str(save_train_phase) \
                     + "_val_" + str(save_val_phase)
 
-        if not os.path.exists("best_model/lr5e-4_do_resnet/"):
-            os.mkdir("best_model/lr5e-4_do_resnet/")
-        torch.save(best_model_wts, "./best_model/lr5e-4_do_resnet/" + base_name + ".pth")
+        if not os.path.exists("best_model/lr5e-4_do_resnest/"):
+            os.mkdir("best_model/lr5e-4_do_resnest/")
+        torch.save(best_model_wts, "./best_model/lr5e-4_do_resnest/" + base_name + ".pth")
         print("best_epoch", str(best_epoch))
 
-        if not os.path.exists("temp/lr5e-4_do_resnet/"):
-            os.mkdir("temp/lr5e-4_do_resnet/")
-        torch.save(model.module.state_dict(), "./temp/lr5e-4_do_resnet/latest_model_" + str(epoch) + ".pth")
+        if not os.path.exists("temp/lr5e-4_do_resnest/"):
+            os.mkdir("temp/lr5e-4_do_resnest/")
+        torch.save(model.module.state_dict(), "./temp/lr5e-4_do_resnest/latest_model_" + str(epoch) + ".pth")
 
 
 def main():

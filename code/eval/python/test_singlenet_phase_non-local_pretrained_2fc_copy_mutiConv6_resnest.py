@@ -359,11 +359,11 @@ def test_model(test_dataset, test_num_each):
         print("finish!")
         g_LFB_test = np.array(g_LFB_test)
 
-        with open("./LFB/g_LFB_test_st.pkl", 'wb') as f:
+        with open("../LFB/g_LFB_test_st.pkl", 'wb') as f:
             pickle.dump(g_LFB_test, f)
 
     else:
-        with open("./LFB/g_LFB_test_st.pkl", 'rb') as f:
+        with open("../LFB/g_LFB_test_st.pkl", 'rb') as f:
             g_LFB_test = pickle.load(f)
 
         print("load completed")

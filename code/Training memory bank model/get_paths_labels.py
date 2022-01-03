@@ -18,15 +18,15 @@ print(phase_dir2)
 #cholec80==================
 def get_dirs2(root_dir):
     file_paths = []
-    file_names = []
+    file_names_ = []
     for lists in os.listdir(root_dir):
         path = os.path.join(root_dir, lists)
         if os.path.isdir(path):
             file_paths.append(path)
-            file_names.append(os.path.basename(path))
-    file_names.sort(key=lambda x:int(x))
-    file_paths.sort(key=lambda x:int(os.path.basename(x)))
-    return file_names, file_paths
+            file_names_.append(os.path.basename(path))
+    file_names_.sort(key=lambda x: int(x))
+    file_paths.sort(key=lambda x: int(os.path.basename(x)))
+    return list(dict.fromkeys(file_names_)), list(dict.fromkeys(file_paths))
 
 def get_files2(root_dir):
     file_paths = []
@@ -65,10 +65,11 @@ for j in range(len(phase_file_names2)):
     video_num_file = int(os.path.splitext(os.path.basename(phase_file_paths2[j]))[0][5:7])
     video_num_dir = int(os.path.basename(img_dir_paths2[j]))
 
-    print("video_num_file:", video_num_file,"video_num_dir:", video_num_dir, "rate:", downsample_rate)
+    print("video_num_file:", video_num_file, "video_num_dir:", video_num_dir, "rate:", downsample_rate)
 
     info_all = []
     first_line = True
+    index = 1
     for phase_line in phase_file:
         phase_split = phase_line.split()
         if first_line:
@@ -76,10 +77,11 @@ for j in range(len(phase_file_names2)):
             continue
         if int(phase_split[0]) % downsample_rate == 0:
             info_each = []
-            img_file_each_path = os.path.join(img_dir_paths2[j], phase_split[0] + '.jpg')
+            img_file_each_path = os.path.join(img_dir_paths2[j], index + '.jpg')
             info_each.append(img_file_each_path)
             info_each.append(phase_dict[phase_split[1]])
-            info_all.append(info_each)              
+            info_all.append(info_each)
+            index += 1
 
     # print(len(info_all))
     all_info_all2.append(info_all)
