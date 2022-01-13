@@ -18,13 +18,13 @@ from NLBlock_MutiConv6_3 import TimeConv
 parser = argparse.ArgumentParser(description='lstm testing')
 parser.add_argument('-g', '--gpu', default=True, type=bool, help='use gpu, default True')
 parser.add_argument('-s', '--seq', default=10, type=int, help='sequence length, default 10')
-parser.add_argument('-t', '--test', default=1200, type=int, help='test batch size, default 10')
-parser.add_argument('-w', '--work', default=8, type=int, help='num of workers to use, default 4')
-parser.add_argument('-n', '--name', type=str, help='name of model')
+parser.add_argument('-t', '--test', default=10, type=int, help='test batch size, default 10')
+parser.add_argument('-w', '--work', default=1, type=int, help='num of workers to use, default 4')
+parser.add_argument('-n', '--name', type=str, help='name of model', default="../../Training TMRNet/best_model/non-local/pretrained_lr5e-7_L30_2fc_copy_mutiConv6_resnest_bs40/lstm_epoch_4_length_10_opt_0_mulopt_1_flip_1_crop_1_batch_50_train_9859_val_9126.pth")
 parser.add_argument(
     '-c', '--crop', default=1, type=int, help='0 rand, 1 cent, 2 resize, 5 five_crop, 10 ten_crop, default 2')
 parser.add_argument('--LFB_l', default=30, type=int, help='long term feature bank length')
-parser.add_argument('--load_LFB', default=True, type=bool, help='whether load exist long term feature bank')
+parser.add_argument('--load_LFB', default=False, type=bool, help='whether load exist long term feature bank')
 
 
 args = parser.parse_args()
@@ -327,7 +327,7 @@ def test_model(test_dataset, test_num_each):
 
         model_LFB = resnet_lstm_LFB()
 
-        model_LFB.load_state_dict(torch.load("./LFB/FBmodel/lstm_epoch_12_length_10_opt_0_mulopt_1_flip_1_crop_1_batch_400_train_9989_val_8839.pth"), strict=False)
+        model_LFB.load_state_dict(torch.load("../../LFB/FBmodel/lstm_epoch_4_length_10_opt_0_mulopt_1_flip_1_crop_1_batch_50_train_9955_val_8694.pth"), strict=False)
 
         if use_gpu:
             model_LFB = DataParallel(model_LFB)
@@ -359,11 +359,11 @@ def test_model(test_dataset, test_num_each):
         print("finish!")
         g_LFB_test = np.array(g_LFB_test)
 
-        with open("../LFB/g_LFB_test_st.pkl", 'wb') as f:
+        with open("../../LFB/g_LFB_test_st.pkl", 'wb') as f:
             pickle.dump(g_LFB_test, f)
 
     else:
-        with open("../LFB/g_LFB_test_st.pkl", 'rb') as f:
+        with open("../../LFB/g_LFB_test_st.pkl", 'rb') as f:
             g_LFB_test = pickle.load(f)
 
         print("load completed")

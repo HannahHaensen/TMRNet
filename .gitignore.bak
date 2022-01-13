@@ -14,4 +14,4 @@ code/LFB/FBmodel/*.pth
 code/eval/python/__pycache__/NLBlock_MutiConv6_3.cpython-39.pyc
 code/eval/python/__pycache__/NLBlock.cpython-39.pyc
 code/Training TMRNet/__pycache__/NLBlock_MutiConv6_3.cpython-39.pyc
-code/Training TMRNet/runs/*
+code/Training TMRNet/runs/non-local/pretrained_lr5e-7_L30_2fc_copy_mutiConv6_resnest_bs50_run2/events.out.tfevents.1642079349.DESKTOP-UT2J4B5.5748.0

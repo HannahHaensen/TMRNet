@@ -377,7 +377,7 @@ def valMinibatch(testloader, model):
 
 def train_model(train_dataset, train_num_each, val_dataset, val_num_each):
     # TensorBoard
-    writer = SummaryWriter('runs/lr5e-4_do_resnet/')
+    writer = SummaryWriter('runs/lr5e-4_do_resnet_run3/')
 
     (train_dataset_80), \
     (train_num_each_80), \
@@ -668,14 +668,14 @@ def train_model(train_dataset, train_num_each, val_dataset, val_num_each):
                     + "_train_" + str(save_train_phase) \
                     + "_val_" + str(save_val_phase)
 
-        if not os.path.exists("best_model/lr5e-4_do_resnet/"):
-            os.mkdir("best_model/lr5e-4_do_resnet/")
-        torch.save(best_model_wts, "./best_model/lr5e-4_do_resnet/" + base_name + ".pth")
+        if not os.path.exists("best_model/lr5e-4_do_resnet_run3/"):
+            os.mkdir("best_model/lr5e-4_do_resnet_run3/")
+        torch.save(best_model_wts, "./best_model/lr5e-4_do_resnet_run3/" + base_name + ".pth")
         print("best_epoch", str(best_epoch))
 
-        if not os.path.exists("temp/lr5e-4_do_resnet/"):
-            os.mkdir("temp/lr5e-4_do_resnet/")
-        torch.save(model.module.state_dict(), "./temp/lr5e-4_do_resnet/latest_model_" + str(epoch) + ".pth")
+        if not os.path.exists("../Training TMRNet/temp/lr5e-4_do_resnet_run3/"):
+            os.mkdir("../Training TMRNet/temp/lr5e-4_do_resnet_run3/")
+        torch.save(model.module.state_dict(), "./temp/lr5e-4_do_resnet_run3/latest_model_" + str(epoch) + ".pth")
 
 
 def main():

@@ -2,7 +2,7 @@ import os
 import glob
 import cv2
 
-source_path = '../data/cholec80/cutMargin/'
+source_path = '../data/heichole_test/cutMargin/'
 videos = os.listdir(source_path)
 
 def change_size(image):

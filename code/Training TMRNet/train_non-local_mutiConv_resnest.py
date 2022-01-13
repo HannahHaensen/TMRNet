@@ -27,12 +27,12 @@ import os
 parser = argparse.ArgumentParser(description='lstm training')
 parser.add_argument('-g', '--gpu', default=True, type=bool, help='gpu use, default True')
 parser.add_argument('-s', '--seq', default=10, type=int, help='sequence length, default 10')
-parser.add_argument('-t', '--train', default=400, type=int, help='train batch size, default 400')
-parser.add_argument('-v', '--val', default=320, type=int, help='valid batch size, default 10')
+parser.add_argument('-t', '--train', default=50, type=int, help='train batch size, default 400')
+parser.add_argument('-v', '--val', default=50, type=int, help='valid batch size, default 10')
 parser.add_argument('-o', '--opt', default=0, type=int, help='0 for sgd 1 for adam, default 1')
 parser.add_argument('-m', '--multi', default=1, type=int, help='0 for single opt, 1 for multi opt, default 1')
 parser.add_argument('-e', '--epo', default=25, type=int, help='epochs to train and val, default 25')
-parser.add_argument('-w', '--work', default=12, type=int, help='num of workers to use, default 4')
+parser.add_argument('-w', '--work', default=1, type=int, help='num of workers to use, default 4')
 parser.add_argument('-f', '--flip', default=1, type=int, help='0 for not flip, 1 for flip, default 0')
 parser.add_argument('-c', '--crop', default=1, type=int, help='0 rand, 1 cent, 5 five_crop, 10 ten_crop, default 1')
 parser.add_argument('-l', '--lr', default=5e-7, type=float, help='learning rate for optimizer, default 5e-5')
@@ -46,7 +46,7 @@ parser.add_argument('--sgdgamma', default=0.1, type=float, help='gamma of steps 
 parser.add_argument('--LFB_l', default=30, type=int, help='long term feature bank length')
 
 parser.add_argument('--load_LFB', default=True, type=bool, help='whether load exist long term feature bank')
-parser.add_argument('--model_path', default='./LFB/FBmodel/x.pth', type=str, help='the path of the memory bank model')
+parser.add_argument('--model_path', default='../LFB/FBmodel/lstm_epoch_4_length_10_opt_0_mulopt_1_flip_1_crop_1_batch_50_train_9955_val_8694.pth', type=str, help='the path of the memory bank model')
 
 args = parser.parse_args()
 
@@ -472,7 +472,7 @@ def valMinibatch(testloader, model, dict_start_idx_LFB):
 
 def train_model(train_dataset, train_num_each, val_dataset, val_num_each):
     # TensorBoard
-    writer = SummaryWriter('runs/non-local/pretrained_lr5e-7_L30_2fc_copy_mutiConv6_resnest_bs40/')
+    writer = SummaryWriter('runs/non-local/pretrained_lr5e-7_L30_2fc_copy_mutiConv6_resnest_bs50_run2/')
 
     (train_num_each_80), \
     (val_dataset), \
@@ -614,17 +614,17 @@ def train_model(train_dataset, train_num_each, val_dataset, val_num_each):
         g_LFB_train = np.array(g_LFB_train)
         g_LFB_val = np.array(g_LFB_val)
 
-        with open("./LFB/g_LFB_train_st.pkl", 'wb') as f:
+        with open("../LFB/g_LFB_train_st.pkl", 'wb') as f:
             pickle.dump(g_LFB_train, f)
 
-        with open("./LFB/g_LFB_val_st.pkl", 'wb') as f:
+        with open("../LFB/g_LFB_val_st.pkl", 'wb') as f:
             pickle.dump(g_LFB_val, f)
 
     else:
-        with open("./LFB/g_LFB_train_st.pkl", 'rb') as f:
+        with open("../LFB/g_LFB_train_st.pkl", 'rb') as f:
             g_LFB_train = pickle.load(f)
 
-        with open("./LFB/g_LFB_val_st.pkl", 'rb') as f:
+        with open("../LFB/g_LFB_val_st.pkl", 'rb') as f:
             g_LFB_val = pickle.load(f)
 
         print("load completed")
@@ -777,7 +777,7 @@ def train_model(train_dataset, train_num_each, val_dataset, val_num_each):
                                   + "_valPhase_" + str(save_val_phase)
 
                     torch.save(model.module.state_dict(),
-                               "./best_model/non-local/pretrained_lr5e-7_L30_2fc_copy_mutiConv6_resnest_bs40/" + public_name + ".pth")
+                               "./best_model/non-local/pretrained_lr5e-7_L30_2fc_copy_mutiConv6_resnest_bs50_run2/" + public_name + ".pth")
 
                 running_loss_phase = 0.0
                 minibatch_correct_phase = 0.0
@@ -914,11 +914,11 @@ def train_model(train_dataset, train_num_each, val_dataset, val_num_each):
                     + "_val_" + str(save_val_phase)
 
         torch.save(best_model_wts,
-                   "./best_model/non-local/pretrained_lr5e-7_L30_2fc_copy_mutiConv6_resnest_bs40/" + base_name + ".pth")
+                   "./best_model/non-local/pretrained_lr5e-7_L30_2fc_copy_mutiConv6_resnest_bs50_run2/" + base_name + ".pth")
         print("best_epoch", str(best_epoch))
 
         torch.save(model.module.state_dict(),
-                   "./temp/non-local/pretrained_lr5e-7_L30_2fc_copy_mutiConv6_resnest_bs40/latest_model_" + str(
+                   "./temp/non-local/pretrained_lr5e-7_L30_2fc_copy_mutiConv6_resnest_bs50_run2/latest_model_" + str(
                        epoch) + ".pth")
 
 
