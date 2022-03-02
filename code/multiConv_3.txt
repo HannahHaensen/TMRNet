@@ -1,0 +1,46 @@
+################
+True
+True
+################
+gpu             :  cuda:0
+sequence length :     10
+test batch size :     10
+num of workers  :      1
+test crop type  :      1
+name of this model: ./Training TMRNet/best_model/non-local/pretrained_lr5e-7_L30_2fc_copy_mutiConv6_3_run4/lstm_epoch_0_length_10_opt_0_mulopt_1_flip_1_crop_1_batch_50_train_9180_val_8833.pth
+Result store path: ./Training TMRNet/best_model/non-local/pretrained_lr5e-7_L30_2fc_copy_mutiConv6_3_run4/lstm_epoch_0_length_10_opt_0_mulopt_1_flip_1_crop_1_batch_50_train_9180_val_8833
+
+test_paths   :  55139
+test_labels  :  55139
+num test start idx :  54923
+last idx test start:  55129
+num of test dataset:  55139
+num of test we use :  54923
+num of all test use: 549230
+loading features!>.........
+load completed
+g_LFB_test shape: (54923, 512)
+C:\Users\Admin\AppData\Local\Programs\Python\Python39\lib\site-packages\torch\nn\_reduction.py:42: UserWarning: size_average and reduce args will be deprecated, please use reduction='sum' instead.
+  warnings.warn(warning.format(ret))
+################
+True
+True
+################
+gpu             :  cuda:0
+sequence length :     10
+test batch size :     10
+num of workers  :      1
+test crop type  :      1
+name of this model: ./Training TMRNet/best_model/non-local/pretrained_lr5e-7_L30_2fc_copy_mutiConv6_3_run4/lstm_epoch_0_length_10_opt_0_mulopt_1_flip_1_crop_1_batch_50_train_9180_val_8833.pth
+Result store path: ./Training TMRNet/best_model/non-local/pretrained_lr5e-7_L30_2fc_copy_mutiConv6_3_run4/lstm_epoch_0_length_10_opt_0_mulopt_1_flip_1_crop_1_batch_50_train_9180_val_8833
+
+Done
+
+C:\Users\Admin\Documents\GitHub\TMRNet\code\eval\python\test_singlenet_phase_non-local_pretrained_2fc_copy_mutiConv6_3.py:447: UserWarning: Implicit dimension choice for softmax has been deprecated. Change the call to include dim=X as an argument.
+  outputs = Sm(outputs)
+[0mtype of all_preds: <class 'list'>
+leng of all preds: 54923
+test elapsed: 24m16s test loss: 1.6249 test accu: 0.5864
+Done
+
+[0mdone 3

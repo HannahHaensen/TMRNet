@@ -22,6 +22,7 @@ from torch.utils.tensorboard import SummaryWriter
 from sklearn import metrics
 from NLBlock_MutiConv6_3 import NLBlock
 from NLBlock_MutiConv6_3 import TimeConv
+from tqdm import tqdm
 import os
 
 parser = argparse.ArgumentParser(description='lstm training')
@@ -472,7 +473,7 @@ def valMinibatch(testloader, model, dict_start_idx_LFB):
 
 def train_model(train_dataset, train_num_each, val_dataset, val_num_each):
     # TensorBoard
-    writer = SummaryWriter('runs/non-local/pretrained_lr5e-7_L30_2fc_copy_mutiConv6_resnest_bs50_run2/')
+    writer = SummaryWriter('runs/non-local/pretrained_lr5e-7_L30_2fc_copy_mutiConv6_resnest_bs50_run4/')
 
     (train_num_each_80), \
     (val_dataset), \
@@ -603,12 +604,12 @@ def train_model(train_dataset, train_num_each, val_dataset, val_num_each):
                 inputs = inputs.view(-1, sequence_length, 3, 224, 224)
                 outputs_feature = model_LFB.forward(inputs)
 
-                for j in range(len(outputs_feature)):
+                for j in tqdm(range(len(outputs_feature))):
                     save_feature = outputs_feature.data.cpu()[j].numpy()
                     save_feature = save_feature.reshape(1, 512)
                     g_LFB_val = np.concatenate((g_LFB_val, save_feature), axis=0)
 
-                print("val feature length:", len(g_LFB_val))
+                # print("val feature length:", len(g_LFB_val))
 
         print("finish!")
         g_LFB_train = np.array(g_LFB_train)
@@ -777,7 +778,7 @@ def train_model(train_dataset, train_num_each, val_dataset, val_num_each):
                                   + "_valPhase_" + str(save_val_phase)
 
                     torch.save(model.module.state_dict(),
-                               "./best_model/non-local/pretrained_lr5e-7_L30_2fc_copy_mutiConv6_resnest_bs50_run2/" + public_name + ".pth")
+                               "./best_model/non-local/pretrained_lr5e-7_L30_2fc_copy_mutiConv6_resnest_bs50_run4/" + public_name + ".pth")
 
                 running_loss_phase = 0.0
                 minibatch_correct_phase = 0.0
@@ -914,11 +915,11 @@ def train_model(train_dataset, train_num_each, val_dataset, val_num_each):
                     + "_val_" + str(save_val_phase)
 
         torch.save(best_model_wts,
-                   "./best_model/non-local/pretrained_lr5e-7_L30_2fc_copy_mutiConv6_resnest_bs50_run2/" + base_name + ".pth")
+                   "./best_model/non-local/pretrained_lr5e-7_L30_2fc_copy_mutiConv6_resnest_bs50_run4/" + base_name + ".pth")
         print("best_epoch", str(best_epoch))
 
         torch.save(model.module.state_dict(),
-                   "./temp/non-local/pretrained_lr5e-7_L30_2fc_copy_mutiConv6_resnest_bs50_run2/latest_model_" + str(
+                   "./temp/non-local/pretrained_lr5e-7_L30_2fc_copy_mutiConv6_resnest_bs50_run4/latest_model_" + str(
                        epoch) + ".pth")
 
 

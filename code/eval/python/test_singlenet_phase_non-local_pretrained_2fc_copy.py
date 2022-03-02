@@ -13,17 +13,24 @@ import numpy as np
 import argparse
 from torchvision.transforms import Lambda
 from NLBlock import NLBlock
+from tqdm import tqdm
 
 parser = argparse.ArgumentParser(description='lstm testing')
 parser.add_argument('-g', '--gpu', default=True, type=bool, help='use gpu, default True')
 parser.add_argument('-s', '--seq', default=10, type=int, help='sequence length, default 10')
 parser.add_argument('-t', '--test', default=10, type=int, help='test batch size, default 10')
 parser.add_argument('-w', '--work', default=1, type=int, help='num of workers to use, default 4')
-parser.add_argument('-n', '--name', default='../../Training TMRNet/best_model/non-local/pretrained_lr5e-7_L40_2fc_copy/lstm_epoch_4_length_10_opt_0_mulopt_1_flip_1_crop_1_batch_50_train_9876_val_9014.pth', type=str, help='name of model')
+parser.add_argument('-n', '--name',
+                    # default='../../Training TMRNet/best_model/non-local/pretrained_lr5e-7_L40_2fc_copy/lstm_epoch_16_length_10_opt_0_mulopt_1_flip_1_crop_1_batch_50_train_9942_val_9037.pth', type=str, help='name of model')
+                    # default='../../Training TMRNet/best_model/non-local/pretrained_lr5e-7_L40_2fc_copy_run2/lstm_epoch_13_length_10_opt_0_mulopt_1_flip_1_crop_1_batch_50_train_9940_val_8972.pth', type=str, help='name of model')
+                    # default='../../Training TMRNet/best_model/non-local/pretrained_lr5e-7_L40_2fc_copy_run3/lstm_epoch_6_length_10_opt_0_mulopt_1_flip_1_crop_1_batch_50_train_9901_val_8972.pth', type=str, help='name of model')
+                    # default='../../Training TMRNet/best_model/non-local/pretrained_lr5e-7_L40_2fc_copy_run4/lstm_epoch_0_length_10_opt_0_mulopt_1_flip_1_crop_1_batch_50_train_9091_val_8876.pth', type=str, help='name of model')
+                    default='../../Training TMRNet/best_model/non-local/pretrained_lr5e-7_L40_2fc_copy_run5/lstm_epoch_9_length_10_opt_0_mulopt_1_flip_1_crop_1_batch_50_train_9924_val_8911.pth', type=str, help='name of model')
 parser.add_argument(
     '-c', '--crop', default=1, type=int, help='0 rand, 1 cent, 2 resize, 5 five_crop, 10 ten_crop, default 2')
 parser.add_argument('--LFB_l', default=30, type=int, help='long term feature bank length')
 parser.add_argument('--load_LFB', default=True, type=bool, help='whether load exist long term feature bank')
+parser.add_argument('--test_path_labels', default='./test_paths_labels.pkl', type=str, help='path to test labels')
 
 # --name '..\..\Training TMRNet\best_model\non-local\pretrained_lr5e-7_L40_2fc_co py\lstm_epoch_4_length_10_opt_0_mulopt_1_flip_1_crop_1_batch_50_train_9876_val_9014.pth' --load_LFB False
 # '../../Training TMRNet/best_model/non-local/pretrained_lr5e-7_L40_2fc_copy/lstm_epoch_4_length_10_opt_0_mulopt_1_flip_1_crop_1_batch_50_train_9876_val_9014.pth'
@@ -323,7 +330,7 @@ def test_model(test_dataset, test_num_each):
 
         model_LFB = resnet_lstm_LFB()
 
-        model_LFB.load_state_dict(torch.load("../../LFB/FBmodel/lstm_epoch_16_length_10_opt_0_mulopt_1_flip_1_crop_1_batch_50_train_9984_val_8519.pth"), strict=False)
+        model_LFB.load_state_dict(torch.load("../../LFB/FBmodel/LFB_resnet/lstm_epoch_16_length_10_opt_0_mulopt_1_flip_1_crop_1_batch_50_train_9984_val_8519.pth"), strict=False)
 
         if use_gpu:
             model_LFB = DataParallel(model_LFB)
@@ -336,7 +343,7 @@ def test_model(test_dataset, test_num_each):
 
         with torch.no_grad():
 
-            for data in test_feature_loader:
+            for data in tqdm(test_feature_loader):
                 if use_gpu:
                     inputs, labels_phase = data[0].to(device), data[1].to(device)
                 else:
@@ -350,7 +357,7 @@ def test_model(test_dataset, test_num_each):
                     save_feature = save_feature.reshape(1, 512)
                     g_LFB_test = np.concatenate((g_LFB_test, save_feature), axis=0)
 
-                print("train feature length:", len(g_LFB_test))
+                # print("train feature length:", len(g_LFB_test))
 
         print("finish!")
         g_LFB_test = np.array(g_LFB_test)
@@ -392,7 +399,7 @@ def test_model(test_dataset, test_num_each):
 
     with torch.no_grad():
 
-        for data in test_loader:
+        for data in tqdm(test_loader):
             
             # 释放显存
             torch.cuda.empty_cache()            
@@ -419,23 +426,23 @@ def test_model(test_dataset, test_num_each):
             Sm = nn.Softmax()
             outputs = Sm(outputs)
             possibility, preds = torch.max(outputs.data, 1)
-            print("possibility:", possibility)
+            # print("possibility:", possibility)
 
             for i in range(len(preds)):
                 all_preds.append(preds[i].data.cpu())
             for i in range(len(possibility)):
                 all_preds_score.append(possibility[i].data.cpu())
-            print("all_preds length:",len(all_preds))
-            print("all_preds_score length:",len(all_preds_score)) 
+            # print("all_preds length:",len(all_preds))
+            # print("all_preds_score length:",len(all_preds_score))
             loss = criterion(outputs, labels)
             # TODO 和batchsize相关
             # test_loss += loss.data[0]/test_loss += loss.data.item()
-            print("preds:", preds.data.cpu())
-            print("labels:", labels.data.cpu())
+            # print("preds:", preds.data.cpu())
+            # print("labels:", labels.data.cpu())
 
             test_loss += loss.data.item()
             test_corrects += torch.sum(preds == labels.data)
-            print("test_corrects:", test_corrects)
+            # print("test_corrects:", test_corrects)
 
     test_elapsed_time = time.time() - test_start_time
     test_accuracy = float(test_corrects) / float(num_test_we_use)
@@ -464,7 +471,8 @@ print()
 
 def main():
     test_dataset, test_num_each = get_test_data(
-        './test_paths_labels.pkl')
+    #    './test_paths_labels_heichole.pkl') #
+    args.test_path_labels) #
 
     test_model(test_dataset, test_num_each)
 

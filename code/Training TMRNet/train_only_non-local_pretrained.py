@@ -554,7 +554,7 @@ def valMinibatch(testloader, model, dict_start_idx_LFB):
 
 def train_model(train_dataset, train_num_each, val_dataset, val_num_each):
     # TensorBoard
-    writer = SummaryWriter('runs/non-local/pretrained_lr5e-7_L40_2fc_copy/')
+    writer = SummaryWriter('runs/non-local/pretrained_lr5e-7_L40_2fc_copy_run5/')
 
     (train_num_each_80), \
     (val_dataset), \
@@ -648,8 +648,7 @@ def train_model(train_dataset, train_num_each, val_dataset, val_num_each):
 
         model_LFB = resnet_lstm_LFB()
 
-        # model_LFB.load_state_dict(torch.load("./LFB/FBmodel/latest_model_15_val8702.pth"), strict=False)
-        model_LFB.load_state_dict(torch.load("./LFB/FBmodel/lstm_epoch_12_length_10_opt_0_mulopt_1_flip_1_crop_1_batch_400_train_9989_val_8839.pth"), strict=False)
+        model_LFB.load_state_dict(torch.load("../LFB/FBmodel/LFB_resnet/lstm_epoch_16_length_10_opt_0_mulopt_1_flip_1_crop_1_batch_50_train_9984_val_8519.pth"), strict=False)
 
         if use_gpu:
             model_LFB = DataParallel(model_LFB)
@@ -720,7 +719,7 @@ def train_model(train_dataset, train_num_each, val_dataset, val_num_each):
 
     model = resnet_lstm()
 
-    model.load_state_dict(torch.load("../LFB/FBmodel/lstm_epoch_16_length_10_opt_0_mulopt_1_flip_1_crop_1_batch_50_train_9984_val_8519.pth"), strict=False)
+    model.load_state_dict(torch.load("../LFB/FBmodel/LFB_resnet/lstm_epoch_16_length_10_opt_0_mulopt_1_flip_1_crop_1_batch_50_train_9984_val_8519.pth"), strict=False)
 
     if use_gpu:
         model = DataParallel(model)
@@ -858,11 +857,11 @@ def train_model(train_dataset, train_num_each, val_dataset, val_num_each):
                     public_name = "minibatch_cnn_lstm_phase" \
                                   + "_valPhase_" + str(save_val_phase)
 
-                    if not os.path.exists("./best_model/non-local/pretrained_lr5e-7_L40_2fc_copy/"):
-                        os.mkdir("./best_model/non-local/pretrained_lr5e-7_L40_2fc_copy/")
+                    if not os.path.exists("./best_model/non-local/pretrained_lr5e-7_L40_2fc_copy_run5/"):
+                        os.mkdir("./best_model/non-local/pretrained_lr5e-7_L40_2fc_copy_run5/")
 
                     torch.save(model.module.state_dict(),
-                               "./best_model/non-local/pretrained_lr5e-7_L40_2fc_copy/" + public_name + ".pth")
+                               "./best_model/non-local/pretrained_lr5e-7_L40_2fc_copy_run5/" + public_name + ".pth")
 
                 running_loss_phase = 0.0
                 minibatch_correct_phase = 0.0
@@ -998,15 +997,15 @@ def train_model(train_dataset, train_num_each, val_dataset, val_num_each):
                     + "_train_" + str(save_train_phase) \
                     + "_val_" + str(save_val_phase)
 
-        if not os.path.exists("./best_model/non-local/pretrained_lr5e-7_L40_2fc_copy/"):
-            os.mkdir("./best_model/non-local/pretrained_lr5e-7_L40_2fc_copy/")
-        torch.save(best_model_wts, "./best_model/non-local/pretrained_lr5e-7_L40_2fc_copy/" + base_name + ".pth")
+        if not os.path.exists("./best_model/non-local/pretrained_lr5e-7_L40_2fc_copy_run5/"):
+            os.mkdir("./best_model/non-local/pretrained_lr5e-7_L40_2fc_copy_run5/")
+        torch.save(best_model_wts, "./best_model/non-local/pretrained_lr5e-7_L40_2fc_copy_run5/" + base_name + ".pth")
         print("best_epoch", str(best_epoch))
 
-        if not os.path.exists("./temp/non-local/pretrained_lr5e-7_L40_2fc_copy/"):
-            os.mkdir("./temp/non-local/pretrained_lr5e-7_L40_2fc_copy/")
+        if not os.path.exists("./temp/non-local/pretrained_lr5e-7_L40_2fc_copy_run5/"):
+            os.mkdir("./temp/non-local/pretrained_lr5e-7_L40_2fc_copy_run5/")
         torch.save(model.module.state_dict(),
-                   "./temp/non-local/pretrained_lr5e-7_L40_2fc_copy/latest_model_" + str(epoch) + ".pth")
+                   "./temp/non-local/pretrained_lr5e-7_L40_2fc_copy_run5/latest_model_" + str(epoch) + ".pth")
 
 
 def main():

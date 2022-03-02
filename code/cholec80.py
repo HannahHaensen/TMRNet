@@ -11,7 +11,7 @@ tool_path = os.path.join(source_path, 'tool_annotations')
 
 
 # create target folder tree
-target_path = '../data/cholec80_test/'
+target_path = '../data/cholec80_test2/'
 target_video_path = os.path.join(target_path, 'videos')
 
 if not os.path.exists(target_path):
